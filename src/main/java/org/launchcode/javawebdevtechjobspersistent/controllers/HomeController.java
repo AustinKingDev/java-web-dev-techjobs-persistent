@@ -23,6 +23,15 @@ import java.util.Optional;
 @Controller
 public class HomeController {
 
+    @Autowired
+    private JobRepository jobRepository;
+
+    @Autowired
+    private EmployerRepository employerRepository;
+
+    @Autowired
+    private SkillRepository skillRepository;
+
     @RequestMapping("")
     public String index(Model model) {
 
@@ -36,6 +45,7 @@ public class HomeController {
     public String displayAddJobForm(Model model) {
         model.addAttribute("title", "Add Job");
         model.addAttribute("employers", employerRepository.findAll());
+        model.addAttribute("skills", skillRepository.findAll());
         model.addAttribute(new Job());
         return "add";
     }
@@ -48,6 +58,17 @@ public class HomeController {
             model.addAttribute("title", "Add Job");
             return "add";
         }
+
+        Employer employer = employerRepository.findById(employerId).orElse(new Employer());
+
+        newJob.setEmployer(employer);
+
+        List<Skill> skill = (List<Skill>) skillRepository.findAllById(skills);
+
+        newJob.setSkills(skill);
+
+        jobRepository.save(newJob);
+
 
         return "redirect:";
     }
